@@ -11,3 +11,11 @@ class User(BaseModel):
     model_config = ConfigDict(
         extra='forbid'
     )
+
+class UserCreate(BaseModel):
+    email: EmailStr
+    hashed_password: str = Field(min_length=8)
+
+    model_config = ConfigDict(
+        extra='forbid'
+    )

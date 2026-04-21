@@ -1,36 +1,33 @@
-from fastapi import APIRouter, HTTPException
-from app.schemas.task import Task
+from fastapi import APIRouter, HTTPException, Depends
+from sqlalchemy.orm import Session
+from app.schemas.task import TaskCreate, TaskUpdate
+import app.crud.task as crud_task
+from app.database.session import get_db
+
 
 task_router = APIRouter(prefix='/tasks', tags=['Работа с тасками'])
 
-fake_list_task = []
+@task_router.get(path='/', name='Получить все задачи')
+def get_task(db: Session = Depends(get_db)):
+    return crud_task.get_all_tasks(db)
 
-@task_router.get('/')
-def get_task():
-    return fake_list_task
+@task_router.get(path='/{user_id}', name='Получить задачи пользователя')
+def get_task_user(user_id: int, db: Session = Depends(get_db)):
+    return crud_task.get_task_current_user(user_id, db)
 
-@task_router.post('/')
-def create_task(task: Task):
-    new_task = task.model_dump()
-    new_task["id"] = len(fake_list_task)
+@task_router.post(path='/', name='Создать задачу')
+def create_task(task: TaskCreate, db: Session = Depends(get_db)):
+    crud_task.create_task(task, db)
+    return task
 
-    fake_list_task.append(new_task)
-    return new_task
 
-@task_router.put('/{task_id}')
-def update_task(task_id: int, task: Task):
-    for idx, t in enumerate(fake_list_task):
-        if t["id"] == task_id:
-            updated_task = task.model_dump()
-            updated_task["id"] = task_id
-            fake_list_task[idx] = updated_task
-            return updated_task
-    raise HTTPException(status_code=404, detail="Задача не найдена")
+@task_router.patch(path='/{task_id}', name='Изменить задачу')
+def update_task(task_id: int, task: TaskUpdate, db: Session = Depends(get_db)):
+    crud_task.update_task(task_id, task, db)
+    return task
 
-@task_router.delete('/{task_id}')
-def delete_task(task_id: int):
-    for idx, t in enumerate(fake_list_task):
-        if t["id"] == task_id:
-            del fake_list_task[idx]
-            return {"message": "Задача успешно удалена"}
-    raise HTTPException(status_code=404, detail="Задача не найдена")
+
+@task_router.delete(path='/{task_id}', name='Удалить задачу')
+def delete_task(task_id: int, db: Session = Depends(get_db)):
+    crud_task.delete_task(task_id, db)
+    return {f"Задача \"{task_id}\" удалена": True}

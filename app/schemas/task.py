@@ -1,16 +1,7 @@
 from datetime import datetime
 from pydantic import BaseModel, Field, ConfigDict
-from enum import Enum
 
-class StatusEnum(str, Enum):
-    TODO = "текущая"
-    IN_PROGRESS = "в процессе"
-    DONE = "выполнена"
-
-class PriorityEnum(str, Enum):
-    LOW = "не важное"
-    MEDIUM = "средний"
-    HIGH = "важное"
+from app.enum.enums import PriorityEnum, StatusEnum
 
 class Task(BaseModel):
     id: int
@@ -25,4 +16,21 @@ class Task(BaseModel):
     model_config = ConfigDict(
         extra='forbid'
     )
+
+class TaskCreate(BaseModel):
+    title: str = Field(min_length=3, max_length=50)
+    description: str = Field(max_length=255)
+    status: StatusEnum
+    priority: PriorityEnum
+    user_id: int
+
+    model_config = ConfigDict(
+        extra='forbid'
+    )
+
+class TaskUpdate(BaseModel):
+    title: str = Field(default=None, min_length=3, max_length=50)
+    description: str = Field(default=None, max_length=255)
+    status: StatusEnum = None
+    priority: PriorityEnum = None
 
