@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from app.models.task import Task
+from app.schemas.task import Task
 
 task_router = APIRouter(prefix='/tasks', tags=['Работа с тасками'])
 
