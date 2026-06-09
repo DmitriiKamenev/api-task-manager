@@ -2,6 +2,7 @@ from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy import String, ForeignKey, Integer
 from datetime import datetime
+from sqlalchemy.orm import relationship
 
 from app.models.base import Base
 from app.enum.enums import PriorityEnum, StatusEnum
@@ -13,13 +14,8 @@ class Task(Base):
     id: Mapped[int] = mapped_column(
         primary_key=True
     )
-    title: Mapped[str] = mapped_column(
-        unique=True,
-        min_length=3
-    )
-    description: Mapped[str] = mapped_column(
-        max_length=255
-    )
+    title: Mapped[str] = mapped_column(String(100))
+    description: Mapped[str] = mapped_column(String(255))
     status: Mapped[StatusEnum] = mapped_column(
         nullable=False,
         default=StatusEnum.TODO
@@ -35,6 +31,13 @@ class Task(Base):
 
     )
 
-    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id")
+    )
+
+    owner = relationship(
+        "User",
+        back_populates="tasks"
+    )
 
 

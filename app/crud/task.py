@@ -2,6 +2,8 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from app.models.task import Task as TaskModel
 from app.models.user import User as UserModel
+from app.schemas.user import User
+
 from app.schemas.task import TaskCreate, TaskUpdate
 from datetime import datetime
 
@@ -14,13 +16,13 @@ def get_task_current_user(user_id: int, db: Session):
 
     return db.query(TaskModel).filter(TaskModel.user_id == user_id).all()
 
-def create_task(task: TaskCreate, db: Session):
+def create_task(task: TaskCreate, current_user: User, db: Session):
     db_task = TaskModel(
         title=task.title,
         description=task.description,
         status=task.status,
         priority=task.priority,
-        user_id=task.user_id,
+        user_id=current_user.id,
         created_at=datetime.now(),
         updated_at=datetime.now()
     )
@@ -29,8 +31,8 @@ def create_task(task: TaskCreate, db: Session):
     db.refresh(db_task)
     return db_task
 
-def update_task(id: int, task: TaskUpdate, db: Session):
-    db_task = db.query(TaskModel).filter(TaskModel.id == id).first()
+def update_task(id: int, task: TaskUpdate, current_user: User, db: Session):
+    db_task = db.query(TaskModel).filter(TaskModel.user_id == current_user.id, TaskModel.id == id).first()
 
     if not db_task:
         raise HTTPException(status_code=404, detail="Task not found")
@@ -45,8 +47,8 @@ def update_task(id: int, task: TaskUpdate, db: Session):
     db.refresh(db_task)
     return db_task
 
-def delete_task(id: int, db: Session):
-    db_task = db.query(TaskModel).filter(TaskModel.id == id).first()
+def delete_task(id: int, current_user: User, db: Session):
+    db_task = db.query(TaskModel).filter(TaskModel.user_id == current_user.id, TaskModel.id == id).first()
 
     if not db_task:
         raise HTTPException(status_code=404, detail="Task not found")

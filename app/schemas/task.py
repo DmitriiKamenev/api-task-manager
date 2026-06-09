@@ -22,7 +22,6 @@ class TaskCreate(BaseModel):
     description: str = Field(max_length=255)
     status: StatusEnum
     priority: PriorityEnum
-    user_id: int
 
     model_config = ConfigDict(
         extra='forbid'

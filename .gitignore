@@ -1,4 +1,43 @@
-"__pycache__/" 
-".idea/" 
-"*.pyc"
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
 
+# Virtual environments
+.venv/
+venv/
+env/
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+
+# Test files
+/tests/
+
+# Pytest cache
+.pytest_cache/
+
+# SQLite databases
+*.sqlite
+*.db
+
+# Logs
+*.log
+
+# Environment variables
+.env
+
+# Coverage reports
+.coverage
+htmlcov/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# OS files
+.DS_Store
+Thumbs.db

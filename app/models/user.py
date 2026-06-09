@@ -3,6 +3,7 @@ from sqlalchemy.orm import mapped_column
 from sqlalchemy import String
 from datetime import datetime
 from app.models.base import Base
+from sqlalchemy.orm import relationship
 
 class User(Base):
     __tablename__ = 'users'
@@ -11,3 +12,7 @@ class User(Base):
     email: Mapped[str] = mapped_column(unique=True)
     hashed_password: Mapped[str] = mapped_column()
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    tasks = relationship(
+        "Task",
+        back_populates="owner"
+    )
